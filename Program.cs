@@ -113,80 +113,38 @@ namespace ISM6225_Fall_2023_Assignment_2
         {
             try
             {
-                // Initialize a list to store the missing ranges
-                IList<IList<int>> missingRanges = new List<IList<int>>();
+                int missRange = nums.Length; // Calculate the number of elements in the given array.
+                IList<IList<int>> missingRanges = new List<IList<int>>(); // Prepare a list to store the identified missing ranges.
 
-                // Use long data type to avoid integer overflow issues
-                long longLower = (long)lower;
-                long longUpper = (long)upper;
-
-                // Check if the input array is empty
-                if (nums == null || nums.Length == 0)
+                if (missRange == 0)
                 {
-                    // Handle the case when there are no elements in nums
-                    if (longLower == longUpper)
-                    {
-                        // If lower and upper are the same, there's only one missing value
-                        missingRanges.Add(new List<int> { (int)longLower });
-                    }
-                    else
-                    {
-                        // If there's a range between lower and upper, add it as a missing range
-                        missingRanges.Add(new List<int> { (int)longLower, (int)longUpper });
-                    }
+                    // In the case of an empty 'nums' array, it implies that there are no missing values in the entire range.
+                    missingRanges.Add(new List<int> { lower, upper }); // Include the full range as a missing range.
                     return missingRanges;
                 }
 
-                // Check if there are missing values before the first element in nums
-                if (nums[0] > longLower)
+                if (nums[0] > lower)
                 {
-                    // Check if the missing value is just one less than the first element
-                    if (nums[0] - 1 == longLower)
+                    // If the first number in the 'nums' array is larger than the lower bound, it indicates missing values between the lower bound and the first element.
+                    missingRanges.Add(new List<int> { lower, nums[0] - 1 });
+                }
+
+                for (int i = 1; i < missRange; ++i)
+                {
+                    // Explore the missing ranges between adjacent numbers in the 'nums' array.
+                    if ((long)nums[i] - nums[i - 1] > 1)
                     {
-                        missingRanges.Add(new List<int> { (int)longLower });
-                    }
-                    else
-                    {
-                        // If there's a range between lower and the first element, add it as a missing range
-                        missingRanges.Add(new List<int> { (int)longLower, (int)nums[0] - 1 });
+                        // Identify the missing range between two consecutive numbers.
+                        missingRanges.Add(new List<int> { nums[i - 1] + 1, nums[i] - 1 });
                     }
                 }
 
-                // Iterate through the elements in the nums array
-                for (int i = 1; i < nums.Length; i++)
+                if (nums[missRange - 1] < upper)
                 {
-                    // Check for missing values between consecutive elements
-                    if ((long)nums[i] > (long)nums[i - 1] + 1)
-                    {
-                        // Check if the missing value is just one less than the next element
-                        if (nums[i] - 1 == (long)nums[i - 1] + 1)
-                        {
-                            missingRanges.Add(new List<int> { (int)(nums[i - 1] + 1) });
-                        }
-                        else
-                        {
-                            // If there's a range between the previous element and the next element, add it as a missing range
-                            missingRanges.Add(new List<int> { (int)(nums[i - 1] + 1), (int)(nums[i] - 1) });
-                        }
-                    }
+                    // If the last number in the 'nums' array is smaller than the upper bound, it implies that there's a missing range between the last number and the upper bound.
+                    missingRanges.Add(new List<int> { nums[missRange - 1] + 1, upper });
                 }
 
-                // Check if there are missing values after the last element in nums
-                if (nums[nums.Length - 1] < longUpper)
-                {
-                    // Check if the missing value is just one less than the upper limit
-                    if (nums[nums.Length - 1] + 1 == longUpper)
-                    {
-                        missingRanges.Add(new List<int> { (int)longUpper });
-                    }
-                    else
-                    {
-                        // If there's a range between the last element and the upper limit, add it as a missing range
-                        missingRanges.Add(new List<int> { (int)(nums[nums.Length - 1] + 1), (int)longUpper });
-                    }
-                }
-
-                // Return the list of missing ranges
                 return missingRanges;
             }
             catch (Exception)
